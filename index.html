@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Portfolio Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+    <style>
+        /* Custom styles and theme variables */
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --text-color: #212529;
+            --accent-color: #007bff;
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .theme-dark {
+            --primary-bg: #1a202c;
+            --secondary-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --accent-color: #63b3ed;
+            --border-color: #4a5568;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-blue {
+            --primary-bg: #e0f2f7;
+            --secondary-bg: #ffffff;
+            --text-color: #2a4365;
+            --accent-color: #3182ce;
+            --border-color: #a0aec0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .panel {
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-color); /* Darker shade of accent */
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        textarea, iframe {
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+        }
+
+        /* Styling for the content inside the iframe */
+        .iframe-content {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            padding: 1.5rem; /* Add padding to prevent content from touching edges */
+        }
+
+        .iframe-content h1, .iframe-content h2, .iframe-content h3 {
+            color: var(--accent-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .iframe-content a {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .iframe-content a:hover {
+            opacity: 0.8;
+            border-bottom-color: transparent;
+        }
+
+        .iframe-content p {
+            margin-bottom: 1rem;
+        }
+
+        .iframe-content ul, .iframe-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            list-style-type: disc;
+        }
+
+        .iframe-content code {
+            background-color: var(--border-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .iframe-content pre {
+            background-color: var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        .iframe-content blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1rem;
+            margin-left: 0;
+            opacity: 0.8;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-extrabold text-center mb-8" style="color: var(--accent-color);">Developer Portfolio Generator</h1>
+
+        <div class="mb-6 flex flex-wrap justify-center gap-4">
+            <button id="theme-default" class="btn">Default Theme</button>
+            <button id="theme-dark" class="btn">Dark Theme</button>
+            <button id="theme-blue" class="btn">Blue Theme</button>
+            <button id="download-html" class="btn">Download HTML</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
+            <!-- Markdown Input Panel -->
+            <div class="panel rounded-lg shadow-lg flex flex-col">
+                <h2 class="text-xl font-semibold p-4 border-b border-gray-200" style="border-color: var(--border-color); color: var(--text-color);">Markdown Input</h2>
+                <textarea id="markdown-input" class="flex-grow p-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-b-lg" placeholder="Paste your Markdown content here...">
+# My Awesome Portfolio
+
+## About Me
+I am a passionate software developer with expertise in web technologies. I love creating engaging user experiences and robust backend systems.
+
+## Skills
+* **Programming Languages:** JavaScript, Python, Java
+* **Web Technologies:** HTML, CSS, React, Node.js, Express.js
+* **Databases:** MongoDB, PostgreSQL
+* **Tools:** Git, Docker, VS Code
+
+## Experience
+
+### Senior Software Engineer - Tech Solutions Inc. (2022 - Present)
+* Led the development of a new microservices architecture using Node.js and Express.js, improving system scalability by 30%.
+* Mentored junior developers and conducted code reviews, fostering a collaborative team environment.
+
+### Software Developer - Web Innovations LLC (2019 - 2022)
+* Developed and maintained responsive web applications using React and Redux.
+* Implemented RESTful APIs for various client projects.
+
+## Projects
+
+### 1. Portfolio Generator (This one!)
+A web application that converts Markdown input into a customizable HTML portfolio website.
+* **Technologies:** HTML, CSS (Tailwind CSS), JavaScript (Marked.js)
+* **Features:** Live preview, multiple themes, HTML download.
+
+### 2. E-commerce Platform
+Built a full-stack e-commerce solution with user authentication, product catalog, shopping cart, and payment gateway integration.
+* **Technologies:** React, Node.js, MongoDB, Stripe API
+
+## Contact
+* **Email:** your.email@example.com
+* **LinkedIn:** [Your LinkedIn Profile](https://www.linkedin.com/in/yourprofile)
+* **GitHub:** [Your GitHub Profile](https://github.com/yourprofile)
+* **Website:** [yourwebsite.com](https://www.yourwebsite.com)
+                </textarea>
+            </div>
+
+          
+            <div class="panel rounded-lg shadow-lg flex flex-col">
+                <h2 class="text-xl font-semibold p-4 border-b border-gray-200" style="border-color: var(--border-color); color: var(--text-color);">HTML Preview</h2>
+                <iframe id="html-preview" class="flex-grow rounded-b-lg w-full h-full bg-white"></iframe>
+            </div>
+        </div>
+
+        
+        <div class="panel rounded-lg shadow-lg mt-8 p-6 text-center">
+            <h2 class="text-2xl font-semibold mb-4" style="color: var(--accent-color);">How to Deploy to GitHub Pages</h2>
+            <p class="text-lg mb-4">
+                1. Click the "Download HTML" button to get your `index.html` file.
+            </p>
+            <p class="text-lg mb-4">
+                2. Create a new public repository on GitHub (e.g., `your-username.github.io` for a personal site, or any name for a project site).
+            </p>
+            <p class="text-lg mb-4">
+                3. Upload the downloaded `index.html` file to the root of your new repository.
+            </p>
+            <p class="text-lg mb-4">
+                4. Go to your repository settings on GitHub, navigate to the "Pages" section, and ensure GitHub Pages is enabled for the `main` branch (or `master` if you used that).
+            </p>
+            <p class="text-lg">
+                Your portfolio website will typically be live at `https://your-username.github.io/your-repo-name/` (or `https://your-username.github.io/` for a personal site) within a few minutes!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        
+        if (typeof marked === 'undefined') {
+            console.error("Marked.js library not loaded. Please check the CDN link.");
+        }
+
+        const markdownInput = document.getElementById('markdown-input');
+        const htmlPreview = document.getElementById('html-preview');
+        const themeDefaultBtn = document.getElementById('theme-default');
+        const themeDarkBtn = document.getElementById('theme-dark');
+        const themeBlueBtn = document.getElementById('theme-blue');
+        const downloadHtmlBtn = document.getElementById('download-html');
+
+        
+        function renderMarkdown() {
+            const markdownText = markdownInput.value;
+           
+            const htmlContent = marked.parse(markdownText);
+
+            
+            const bodyClasses = document.body.className;
+
+            
+            const iframeDocContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Portfolio Preview</title>
+                    <style>
+                        /* Inherit theme variables from parent */
+                        html, body {
+                            height: 100%; /* Ensure full height for content */
+                            margin: 0;
+                            padding: 0;
+                            overflow-x: hidden; /* Prevent horizontal scroll */
+                            background-color: var(--primary-bg); /* Use primary background from theme */
+                        }
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            line-height: 1.6;
+                            color: var(--text-color);
+                            transition: background-color 0.3s ease, color 0.3s ease;
+                        }
+                        .iframe-content {
+                            padding: 1.5rem; /* Add padding to the content itself */
+                        }
+                        h1, h2, h3, h4, h5, h6 {
+                            color: var(--accent-color);
+                            margin-top: 1.5rem;
+                            margin-bottom: 0.75rem;
+                            font-weight: 700;
+                        }
+                        a {
+                            color: var(--accent-color);
+                            text-decoration: none;
+                            border-bottom: 1px solid var(--accent-color);
+                            transition: all 0.2s ease-in-out;
+                        }
+                        a:hover {
+                            opacity: 0.8;
+                            border-bottom-color: transparent;
+                        }
+                        p {
+                            margin-bottom: 1rem;
+                        }
+                        ul, ol {
+                            margin-left: 1.5rem;
+                            margin-bottom: 1rem;
+                        }
+                        ul {
+                            list-style-type: disc;
+                        }
+                        ol {
+                            list-style-type: decimal;
+                        }
+                        code {
+                            background-color: var(--border-color);
+                            padding: 0.2rem 0.4rem;
+                            border-radius: 0.25rem;
+                            font-family: monospace;
+                            font-size: 0.9em;
+                        }
+                        pre {
+                            background-color: var(--border-color);
+                            padding: 1rem;
+                            border-radius: 0.5rem;
+                            overflow-x: auto;
+                            margin-bottom: 1rem;
+                        }
+                        blockquote {
+                            border-left: 4px solid var(--accent-color);
+                            padding-left: 1rem;
+                            margin-left: 0;
+                            opacity: 0.8;
+                            font-style: italic;
+                        }
+                    </style>
+                </head>
+                <body class="${bodyClasses}">
+                    <div class="iframe-content">
+                        ${htmlContent}
+                    </div>
+                </body>
+                </html>
+            `;
+            htmlPreview.srcdoc = iframeDocContent;
+        }
+
+        
+        function applyTheme(themeClass) {
+            document.body.classList.remove('theme-dark', 'theme-blue'); 
+            if (themeClass !== 'theme-default') { 
+                document.body.classList.add(themeClass);
+            }
+            renderMarkdown(); 
+        }
+
+        
+        function downloadHtml() {
+            const markdownText = markdownInput.value;
+            const htmlContent = marked.parse(markdownText);
+            const currentThemeClass = Array.from(document.body.classList).find(cls => cls.startsWith('theme-'));
+
+            const fullHtmlDocument = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <!-- Inter Font (Google Fonts) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Theme Variables */
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #ffffff;
+            --text-color: #212529;
+            --accent-color: #007bff;
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .theme-dark {
+            --primary-bg: #1a202c;
+            --secondary-bg: #2d3748;
+            --text-color: #e2e8f0;
+            --accent-color: #63b3ed;
+            --border-color: #4a5568;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-blue {
+            --primary-bg: #e0f2f7;
+            --secondary-bg: #ffffff;
+            --text-color: #2a4365;
+            --accent-color: #3182ce;
+            --border-color: #a0aec0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2.5rem 1.5rem; /* Add generous padding for overall document */
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        .portfolio-container {
+            max-width: 960px; /* Max width for content */
+            width: 100%;
+            background-color: var(--secondary-bg);
+            border-radius: 0.75rem; /* Rounded corners for the main container */
+            box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
+            padding: 2.5rem;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 1.5rem; }
+        h2 { font-size: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 2rem; }
+        h3 { font-size: 1.5rem; margin-top: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        a:hover {
+            opacity: 0.8;
+            border-bottom-color: transparent;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        ul { list-style-type: disc; }
+        ol { list-style-type: decimal; }
+
+        code {
+            background-color: var(--border-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1rem;
+            margin-left: 0;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .portfolio-container {
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+            }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.75rem; }
+            h3 { font-size: 1.25rem; }
+        }
+    </style>
+</head>
+<body class="${currentThemeClass || ''}">
+    <div class="portfolio-container">
+        ${htmlContent}
+    </div>
+</body>
+</html>
+            `;
+
+            
+            const blob = new Blob([fullHtmlDocument], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); 
+        }
+
+       
+        markdownInput.addEventListener('input', renderMarkdown);
+        themeDefaultBtn.addEventListener('click', () => applyTheme('theme-default'));
+        themeDarkBtn.addEventListener('click', () => applyTheme('theme-dark'));
+        themeBlueBtn.addEventListener('click', () => applyTheme('theme-blue'));
+        downloadHtmlBtn.addEventListener('click', downloadHtml);
+
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMarkdown();
+        });
+    </script>
+</body>
+</html>
